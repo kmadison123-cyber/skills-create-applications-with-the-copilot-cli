@@ -6,6 +6,9 @@ const {
   subtraction,
   multiplication,
   division,
+  modulo,
+  power,
+  squareRoot,
   calculate,
 } = require("../calculator");
 
@@ -40,12 +43,50 @@ test("division rejects division by zero", () => {
   });
 });
 
+test("modulo returns the remainder", () => {
+  // Example from calc-extended-operations.png: 5 % 2 = 1.
+  assert.equal(modulo(5, 2), 1);
+  assert.equal(modulo(10, 3), 1);
+  assert.equal(modulo(-10, 3), -1);
+});
+
+test("modulo rejects modulo by zero", () => {
+  assert.throws(() => modulo(10, 0), {
+    name: "RangeError",
+    message: "Modulo by zero is not allowed.",
+  });
+});
+
+test("power raises the first number to the second power", () => {
+  // Example from calc-extended-operations.png: 2 ^ 3 = 8.
+  assert.equal(power(2, 3), 8);
+  assert.equal(power(9, 0.5), 3);
+  assert.equal(power(-2, 3), -8);
+});
+
+test("square root returns the non-negative square root", () => {
+  // Example from calc-extended-operations.png: sqrt(16) = 4.
+  assert.equal(squareRoot(16), 4);
+  assert.equal(squareRoot(0), 0);
+  assert.equal(squareRoot(9), 3);
+  assert.equal(squareRoot(2), Math.sqrt(2));
+});
+
+test("square root rejects negative numbers", () => {
+  assert.throws(() => squareRoot(-1), {
+    name: "RangeError",
+    message: "Square root of a negative number is not allowed.",
+  });
+});
+
 test("operations reject non-finite operands", () => {
   for (const operation of [
     addition,
     subtraction,
     multiplication,
     division,
+    modulo,
+    power,
   ]) {
     assert.throws(() => operation(Number.NaN, 1), {
       name: "TypeError",
@@ -56,6 +97,10 @@ test("operations reject non-finite operands", () => {
       message: "Both operands must be valid numbers.",
     });
   }
+  assert.throws(() => squareRoot(Number.NaN), {
+    name: "TypeError",
+    message: "The operand must be a valid number.",
+  });
 });
 
 test("calculate supports operation names and symbols", () => {
@@ -67,12 +112,18 @@ test("calculate supports operation names and symbols", () => {
   assert.equal(calculate("*", 45, 2), 90);
   assert.equal(calculate("division", 20, 5), 4);
   assert.equal(calculate("/", 20, 5), 4);
+  assert.equal(calculate("modulo", 10, 3), 1);
+  assert.equal(calculate("%", 10, 3), 1);
+  assert.equal(calculate("power", 2, 3), 8);
+  assert.equal(calculate("^", 2, 3), 8);
+  assert.equal(calculate("sqrt", 9), 3);
+  assert.equal(calculate("squareRoot", 9), 3);
 });
 
 test("calculate rejects unsupported operations", () => {
-  assert.throws(() => calculate("modulo", 10, 3), {
+  assert.throws(() => calculate("unknown", 10, 3), {
     name: "Error",
     message:
-      'Invalid operation "modulo". Use addition, subtraction, multiplication, or division.',
+      'Invalid operation "unknown". Use addition, subtraction, multiplication, division, modulo, power, or squareRoot.',
   });
 });

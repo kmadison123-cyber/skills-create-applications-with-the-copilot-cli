@@ -8,6 +8,9 @@
  * - subtraction (-)
  * - multiplication (*)
  * - division (/)
+ * - modulo (%)
+ * - exponentiation (^)
+ * - square root (sqrt)
  */
 
 function validateOperands(a, b) {
@@ -43,6 +46,32 @@ function division(a, b) {
   return a / b;
 }
 
+// Modulo: returns the remainder after dividing the first number by the second.
+function modulo(a, b) {
+  validateOperands(a, b);
+  if (b === 0) {
+    throw new RangeError("Modulo by zero is not allowed.");
+  }
+  return a % b;
+}
+
+// Power: raises the first number to the power of the second number.
+function power(a, b) {
+  validateOperands(a, b);
+  return a ** b;
+}
+
+// Square root: returns the non-negative square root of a number.
+function squareRoot(a) {
+  if (!Number.isFinite(a)) {
+    throw new TypeError("The operand must be a valid number.");
+  }
+  if (a < 0) {
+    throw new RangeError("Square root of a negative number is not allowed.");
+  }
+  return Math.sqrt(a);
+}
+
 const operations = {
   "+": addition,
   addition,
@@ -52,22 +81,31 @@ const operations = {
   multiplication,
   "/": division,
   division,
+  "%": modulo,
+  modulo,
+  "^": power,
+  power,
+  sqrt: squareRoot,
+  squareroot: squareRoot,
+  squareRoot,
 };
 
 function calculate(operation, a, b) {
   const operationFunction = operations[operation.toLowerCase?.() ?? operation];
   if (!operationFunction) {
     throw new Error(
-      `Invalid operation "${operation}". Use addition, subtraction, multiplication, or division.`,
+      `Invalid operation "${operation}". Use addition, subtraction, multiplication, division, modulo, power, or squareRoot.`,
     );
   }
-  return operationFunction(a, b);
+  return operationFunction === squareRoot
+    ? operationFunction(a)
+    : operationFunction(a, b);
 }
 
 function runCli(args) {
-  if (args.length !== 3) {
+  if (args.length !== 3 && !(args.length === 2 && args[0].toLowerCase() === "sqrt")) {
     throw new Error(
-      "Usage: node src/calculator.js <operation> <first number> <second number>",
+      "Usage: node src/calculator.js <operation> <first number> [second number]",
     );
   }
 
@@ -92,5 +130,8 @@ module.exports = {
   subtraction,
   multiplication,
   division,
+  modulo,
+  power,
+  squareRoot,
   calculate,
 };
